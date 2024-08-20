@@ -95,9 +95,10 @@ jobs:
           SML_LIB: /usr/local/lib/mlkit
       - name: Test
         working-directory: test
+        # MLKit's OS.Process.failure is 255 and toml-test v1.5.0 doesn't like it.
         run: |
           make -f Makefile.mlkit decoder utf8
-          ../toml-test ./decoder
+          ../toml-test -- sh -c './decoder || false'
           ./utf8
         env:
           SML_LIB: /usr/local/lib/mlkit
