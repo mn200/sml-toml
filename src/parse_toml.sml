@@ -640,13 +640,16 @@ struct
             ([d3, d2, d1, _], false, SOME (#"-", strm'')) => (* full-date: offset-date-time / local-date-time / local-date *)
               let
                 val year =
-                  digitToInt d0 * 10 + digitToInt d1 * 10 + digitToInt d2
-                  + digitToInt d3
+                  ((digitToInt d0 * 10 + digitToInt d1) * 10 + digitToInt d2)
+                  * 10 + digitToInt d3
               in
                 readDate (#"-" :: revDigits, year, strm'')
               end
-          | ([_, _], false, SOME (#":", strm'')) =>
+          | ([d1, d0], false, SOME (#":", strm'')) =>
               let
+                val hour = digitToInt d0 * 10 + digitToInt d1
+                val () =
+                  if hour < 24 then () else raise E.ParseError E.INVALID_TIME
                 val (accum, strm''') =
                   readMinSec (#":" :: revDigits, strm'') (* partial-time *)
               in
